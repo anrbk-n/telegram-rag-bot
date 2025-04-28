@@ -6,3 +6,6 @@ src/pipelines/__pycache__/index.cpython-312.pyc
 src/pipelines/__pycache__/pdf.cpython-312.pyc
 src/pipelines/__pycache__/rag.cpython-312.pyc
 src/.env
+src/bot/__pycache__/handlers.cpython-312.pyc
+src/bot/__pycache__/keyboards.cpython-312.pyc
+src/bot/__pycache__/main.cpython-312.pyc
