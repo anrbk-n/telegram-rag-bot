@@ -1,0 +1,8 @@
+src/pipelines/__pycache__/__init__.cpython-312.pyc
+src/pipelines/__pycache__/chunk.cpython-312.pyc
+src/pipelines/__pycache__/docx.cpython-312.pyc
+src/pipelines/__pycache__/embed.cpython-312.pyc
+src/pipelines/__pycache__/index.cpython-312.pyc
+src/pipelines/__pycache__/pdf.cpython-312.pyc
+src/pipelines/__pycache__/rag.cpython-312.pyc
+src/.env
