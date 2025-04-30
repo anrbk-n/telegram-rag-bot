@@ -12,7 +12,7 @@ from pipelines.pdf import extract_text_from_pdf
 from pipelines.chunk import split_text_into_chunks
 from pipelines.embed import embed_texts
 from pipelines.index import create_faiss_index, search_faiss
-from pipelines.rag import optimize_question, generate_answer
+from pipelines.rag import generate_answer_with_gemini
 
 user_language = {}
 user_indices = {}
@@ -81,43 +81,32 @@ async def handle_document(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_text("✅ Файл успешно обработан! Теперь отправьте ваш вопрос.")
 
-async def handle_user_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def handle_question(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.message.from_user.id
     text = update.message.text
 
     if user_id not in user_language:
         await update.message.reply_text("❗ Сначала выберите язык через /start.")
         return
-
     if user_id not in user_indices:
         await update.message.reply_text("❗ Сначала отправьте файл (PDF или DOCX).")
         return
 
-    language = user_language[user_id]
-
     try:
-        optimized = optimize_question(text, language)
-        question_embedding = embed_texts([optimized])[0].unsqueeze(0)
+        lang = user_language[user_id]
+        embedding = embed_texts([text])[0].unsqueeze(0)
+        top_idxs = search_faiss(user_indices[user_id], embedding, top_k=3)
+        context_chunks = [user_chunks[user_id][i] for i in top_idxs]
 
-        top_indices = search_faiss(user_indices[user_id], question_embedding, top_k=3)
-        selected_chunks = [user_chunks[user_id][i] for i in top_indices]
-
-        language = user_language[user_id]
-        final_answer = generate_answer(
-        question       = text,
-        retrieved_chunks = selected_chunks,
-        language = language
-)
-
-
-        await update.message.reply_text(final_answer)
-
+        answer = generate_answer_with_gemini(text, context_chunks, language=lang)
+        await update.message.reply_text(answer)
     except Exception as e:
-        logging.exception("Ошибка при обработке вопроса")
-        await update.message.reply_text("❌ Ошибка при обработке вопроса. Попробуйте ещё раз.")
+        logging.exception("Ошибка при обработке вопроса:")
+        await update.message.reply_text("❌ Что-то пошло не так. Попробуйте ещё раз.")
+
 
 def register_handlers(app):
     app.add_handler(CommandHandler("start", start_command))
     app.add_handler(CallbackQueryHandler(language_selection))
     app.add_handler(MessageHandler(filters.Document.PDF | filters.Document.DOCX, handle_document))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_user_message))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_question))
