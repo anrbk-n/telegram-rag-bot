@@ -109,6 +109,23 @@ async def handle_document(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_text(message_by_lang.get(lang, message_by_lang["en"]))
 
+def format_output(text: str) -> str:
+    
+    text = text.replace("**", "") 
+
+    lines = text.split("\n")
+    formatted = []
+    for line in lines:
+        line = line.strip()
+        if not line:
+            continue
+        if ":" in line and line.count(" ") < 8:
+            formatted.append(f"\n{line.strip()}")
+        else:
+            formatted.append(f"– {line}")
+    return "\n".join(formatted)
+
+
 
 async def handle_question(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.message.from_user.id
@@ -128,7 +145,9 @@ async def handle_question(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context_chunks = [user_chunks[user_id][i] for i in top_idxs]
 
         answer = generate_answer_with_gemini(text, context_chunks, language=lang)
-        await update.message.reply_text(answer)
+        formatted_answer = format_output(answer)
+
+        await update.message.reply_text(formatted_answer)
     except Exception as e:
         logging.exception("Ошибка при обработке вопроса:")
         await update.message.reply_text("❌ Что-то пошло не так. Попробуйте ещё раз.")
