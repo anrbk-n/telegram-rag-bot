@@ -21,7 +21,7 @@ user_chunks = {}
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "👋 *Добро пожаловать!*\n\n"
-        "Hello and welcome!\n\n"
+        "*Hello and welcome!*\n\n"
         "🌐 *Выберите язык / Select language:*",
         reply_markup=language_keyboard(),
         parse_mode="Markdown"
