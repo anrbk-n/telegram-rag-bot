@@ -133,17 +133,6 @@ async def handle_question(update: Update, context: ContextTypes.DEFAULT_TYPE):
         logging.exception("Ошибка при обработке вопроса:")
         await update.message.reply_text("❌ Что-то пошло не так. Попробуйте ещё раз.")
 
-async def clear_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_id = update.effective_user.id
-    user_language.pop(user_id, None)
-    user_chunks.pop(user_id, None)
-    user_indices.pop(user_id, None)
-
-    await update.message.reply_text(
-        "✅ Session cleared.\nYou can now send a new document or use /start to begin again."
-    )
-
-from bot.keyboards import language_keyboard
 
 async def back_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
@@ -155,7 +144,6 @@ async def back_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 def register_handlers(app):
     app.add_handler(CommandHandler("start", start_command))
-    app.add_handler(CommandHandler("clear", clear_command))
     app.add_handler(CommandHandler("back", back_command))
 
     app.add_handler(CallbackQueryHandler(language_selection))
