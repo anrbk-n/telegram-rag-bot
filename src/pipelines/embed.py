@@ -1,8 +1,12 @@
-from textsplit.tools import get_segments
 from sentence_transformers import SentenceTransformer
+import torch
 
-model = SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
+embed_model = SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
 
-def split_text_into_chunks(text: str, max_chunk_tokens: int = 1000) -> list:
-    segments = get_segments(text, model, ideal_segsize=max_chunk_tokens // 100)
-    return [s.strip() for s in segments if len(s.strip()) > 50]
+def embed_texts(texts: list[str], convert_to_tensor: bool = True) -> torch.Tensor | list:
+    return embed_model.encode(
+        texts,
+        convert_to_tensor=convert_to_tensor,
+        normalize_embeddings=True,
+        show_progress_bar=False
+    )
