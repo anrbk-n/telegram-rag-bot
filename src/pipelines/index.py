@@ -13,7 +13,7 @@ def create_faiss_index(embeddings: torch.Tensor):
     return index
 
 def search_faiss(index, query_embedding: torch.Tensor, top_k: int = 5):
-    query_np = query_embedding.cpu().numpy()  # сначала переносим на CPU
+    query_np = query_embedding.cpu().numpy()  
     faiss.normalize_L2(query_np)
     distances, indices = index.search(query_np, top_k)
     return indices[0]
