@@ -1,6 +1,6 @@
 python-telegram-bot>=20.0
 python-dotenv
-google-generative-ai
+google-generativeai
 sentence-transformers
 torch
 faiss-cpu
