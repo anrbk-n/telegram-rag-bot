@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: AskDoc
+    plan: free
+    envVars:
+      - key: TELEGRAM_TOKEN
+      - key: GOOGLE_API_KEY
+    buildCommand: pip install -r requirements.txt
+    startCommand: python src/main.py
